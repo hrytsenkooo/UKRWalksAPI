@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UKRWalks.API.Data;
+using UKRWalks.API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,8 @@ builder.Services.AddDbContext<UKRWalksDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("UKRWalksConnectionString"));
 });
+
+builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
 
 var app = builder.Build();
 

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using UKRWalks.API.Data;
 using UKRWalks.API.Models.Domain;
 using UKRWalks.API.Models.DTO;
+using UKRWalks.API.Repositories;
 
 namespace UKRWalks.API.Controllers
 {
@@ -12,16 +13,18 @@ namespace UKRWalks.API.Controllers
     public class RegionsController : ControllerBase
     {
         private readonly UKRWalksDbContext dbContext;
+        private readonly IRegionRepository regionRepository;
 
-        public RegionsController(UKRWalksDbContext dbContext)
+        public RegionsController(UKRWalksDbContext dbContext, IRegionRepository regionRepository)
         {
             this.dbContext = dbContext;
+            this.regionRepository = regionRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var regions = await dbContext.Regions.ToListAsync();
+            var regions = await regionRepository.GetAllAsync();
             var regionsDto = new List<RegionDto>();
             foreach (var region in regions)
             {
@@ -40,7 +43,7 @@ namespace UKRWalks.API.Controllers
         [Route("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var region = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
+            var region = await regionRepository.GetByIdAsync(id);
 
             if (region == null) return NotFound();
 
@@ -64,8 +67,7 @@ namespace UKRWalks.API.Controllers
                 RegionImageUrl = addRegionRequestDto.RegionImageUrl
             };
 
-            await dbContext.Regions.AddAsync(region);
-            await dbContext.SaveChangesAsync();
+            region = await regionRepository.CreateAsync(region);
 
             var regionDto = new RegionDto
             {
@@ -82,14 +84,16 @@ namespace UKRWalks.API.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
-            var region = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
+            var region = new Region
+            {
+                Code = updateRegionRequestDto.Code,
+                Name = updateRegionRequestDto.Name,
+                RegionImageUrl = updateRegionRequestDto.RegionImageUrl
+            };
+
+            region = await regionRepository.UpdateAsync(id, region);
+
             if (region == null) return NotFound();
-
-            region.Code = updateRegionRequestDto.Code;
-            region.Name = updateRegionRequestDto.Name;
-            region.RegionImageUrl = updateRegionRequestDto.RegionImageUrl;
-
-            await dbContext.SaveChangesAsync();
 
             var regionDto = new RegionDto
             {
@@ -106,11 +110,8 @@ namespace UKRWalks.API.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var region = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
+            var region = await regionRepository.DeleteAsync(id);
             if (region == null) return NotFound();
-
-            dbContext.Regions.Remove(region);
-            await dbContext.SaveChangesAsync();
 
             var regionDto = new RegionDto
             {
