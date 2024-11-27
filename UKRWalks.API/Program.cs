@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using UKRWalks.API.Data;
+using UKRWalks.API.Mappings;
 using UKRWalks.API.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,7 @@ builder.Services.AddDbContext<UKRWalksDbContext>(options =>
 });
 
 builder.Services.AddScoped<IRegionRepository, SQLRegionRepository>();
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 var app = builder.Build();
 

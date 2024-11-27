@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UKRWalks.API.Data;
@@ -14,29 +15,20 @@ namespace UKRWalks.API.Controllers
     {
         private readonly UKRWalksDbContext dbContext;
         private readonly IRegionRepository regionRepository;
+        private readonly IMapper mapper;
 
-        public RegionsController(UKRWalksDbContext dbContext, IRegionRepository regionRepository)
+        public RegionsController(UKRWalksDbContext dbContext, IRegionRepository regionRepository, IMapper mapper)
         {
             this.dbContext = dbContext;
             this.regionRepository = regionRepository;
+            this.mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var regions = await regionRepository.GetAllAsync();
-            var regionsDto = new List<RegionDto>();
-            foreach (var region in regions)
-            {
-                regionsDto.Add(new RegionDto()
-                {
-                    Id = region.Id,
-                    Code = region.Code,
-                    Name = region.Name,
-                    RegionImageUrl = region.RegionImageUrl
-                });
-            }
-            return Ok(regionsDto);
+            return Ok(mapper.Map<List<RegionDto>>(regions));
         }
 
         [HttpGet]
@@ -47,35 +39,17 @@ namespace UKRWalks.API.Controllers
 
             if (region == null) return NotFound();
 
-            var regionDto = new RegionDto
-            {
-                Id = region.Id,
-                Code = region.Code,
-                Name = region.Name,
-                RegionImageUrl = region.RegionImageUrl
-            };
-            return Ok(regionDto);
+            return Ok(mapper.Map<RegionDto>(region));
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
-            var region = new Region
-            {
-                Code = addRegionRequestDto.Code,
-                Name = addRegionRequestDto.Name,
-                RegionImageUrl = addRegionRequestDto.RegionImageUrl
-            };
+            var region = mapper.Map<Region>(addRegionRequestDto);
 
             region = await regionRepository.CreateAsync(region);
 
-            var regionDto = new RegionDto
-            {
-                Id = region.Id,
-                Code = region.Code,
-                Name = region.Name,
-                RegionImageUrl = region.RegionImageUrl
-            };
+            var regionDto = mapper.Map<RegionDto>(region);
 
             return CreatedAtAction(nameof(GetById), new { id = region.Id }, regionDto);
         }
@@ -84,26 +58,13 @@ namespace UKRWalks.API.Controllers
         [Route("{id:guid}")]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
-            var region = new Region
-            {
-                Code = updateRegionRequestDto.Code,
-                Name = updateRegionRequestDto.Name,
-                RegionImageUrl = updateRegionRequestDto.RegionImageUrl
-            };
+            var region = mapper.Map<Region>(updateRegionRequestDto);
 
             region = await regionRepository.UpdateAsync(id, region);
 
             if (region == null) return NotFound();
 
-            var regionDto = new RegionDto
-            {
-                Id = region.Id,
-                Code = region.Code,
-                Name = region.Name,
-                RegionImageUrl = region.RegionImageUrl
-            };
-
-            return Ok(regionDto);
+            return Ok(mapper.Map<RegionDto>(region));
         }
 
         [HttpDelete]
@@ -113,15 +74,7 @@ namespace UKRWalks.API.Controllers
             var region = await regionRepository.DeleteAsync(id);
             if (region == null) return NotFound();
 
-            var regionDto = new RegionDto
-            {
-                Id = region.Id,
-                Code = region.Code,
-                Name = region.Name,
-                RegionImageUrl = region.RegionImageUrl
-            };
-
-            return Ok(regionDto);
+            return Ok(mapper.Map<RegionDto>(region));
         }
     }
 }
