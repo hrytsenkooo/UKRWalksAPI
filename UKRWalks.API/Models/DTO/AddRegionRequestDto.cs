@@ -1,6 +1,6 @@
 ﻿namespace UKRWalks.API.Models.DTO
 {
-    public class AddRegionRequesrDto
+    public class AddRegionRequestDto
     {
         public string Code { get; set; }
         public string Name { get; set; }
