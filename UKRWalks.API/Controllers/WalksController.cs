@@ -32,9 +32,9 @@ namespace UKRWalks.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] string? filterOn, [FromQuery] string? filterQuery)
         {
-            var walks = await walkRepository.GetAllAsync();
+            var walks = await walkRepository.GetAllAsync(filterOn, filterQuery);
 
             return Ok(mapper.Map<List<WalkDto>>(walks));
         }
