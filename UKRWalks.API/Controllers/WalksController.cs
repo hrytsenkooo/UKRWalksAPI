@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using UKRWalks.API.CustomActionFilters;
 using UKRWalks.API.Models.Domain;
 using UKRWalks.API.Models.DTO;
 using UKRWalks.API.Repositories;
@@ -21,6 +22,7 @@ namespace UKRWalks.API.Controllers
         }
 
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddWalkRequestDto addWalkRequestDto)
         {
             var walk = mapper.Map<Walk>(addWalkRequestDto);
@@ -49,13 +51,14 @@ namespace UKRWalks.API.Controllers
 
         [HttpPut]
         [Route("{id:guid}")]
+        [ValidateModel]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateWalkRequestDto updateWalkRequestDto)
         {
             var walk = mapper.Map<Walk>(updateWalkRequestDto);
 
             walk = await walkRepository.UpdateAsync(id, walk);
-            if (walk == null) return NotFound();  
-            
+            if (walk == null) return NotFound();
+
             return Ok(mapper.Map<WalkDto>(walk));
         }
 

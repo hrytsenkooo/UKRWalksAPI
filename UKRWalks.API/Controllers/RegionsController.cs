@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using UKRWalks.API.CustomActionFilters;
 using UKRWalks.API.Data;
 using UKRWalks.API.Models.Domain;
 using UKRWalks.API.Models.DTO;
@@ -43,6 +44,7 @@ namespace UKRWalks.API.Controllers
         }
 
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDto addRegionRequestDto)
         {
             var region = mapper.Map<Region>(addRegionRequestDto);
@@ -51,11 +53,12 @@ namespace UKRWalks.API.Controllers
 
             var regionDto = mapper.Map<RegionDto>(region);
 
-            return CreatedAtAction(nameof(GetById), new { id = region.Id }, regionDto);
+            return CreatedAtAction(nameof(GetById), new { id = region.Id }, regionDto); 
         }
 
         [HttpPut]
         [Route("{id:guid}")]
+        [ValidateModel]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
             var region = mapper.Map<Region>(updateRegionRequestDto);
