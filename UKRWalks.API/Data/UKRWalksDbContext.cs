@@ -5,7 +5,7 @@ namespace UKRWalks.API.Data
 {
     public class UKRWalksDbContext : DbContext
     {
-        public UKRWalksDbContext(DbContextOptions dbContextOptions) : base (dbContextOptions)
+        public UKRWalksDbContext(DbContextOptions<UKRWalksDbContext> dbContextOptions) : base (dbContextOptions)
         {
 
         }
