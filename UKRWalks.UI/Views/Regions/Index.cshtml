@@ -1,0 +1,57 @@
+﻿@model IEnumerable<UKRWalks.UI.Models.DTO.RegionDto>
+@{
+    ViewData["Title"] = "Regions List";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="mb-4 text-primary">Regions List</h1>
+
+            <div class="mb-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search by name or code..." />
+            </div>
+
+            <table class="table table-hover table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Id</th>
+                        <th>Code</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody id="regionsTableBody">
+                    @if (Model.Any())
+                    {
+                        @foreach (var region in Model)
+                        {
+                            <tr>
+                                <td>@region.Id</td>
+                                <td>@region.Code</td>
+                                <td>@region.Name</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center">No regions found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('searchInput').addEventListener('keyup', function () {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#regionsTableBody tr');
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            const match = Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(filter));
+            row.style.display = match ? '' : 'none';
+        });
+    });
+</script>
