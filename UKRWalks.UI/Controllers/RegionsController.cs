@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Text;
+using System.Text.Json;
+using UKRWalks.UI.Models;
 using UKRWalks.UI.Models.DTO;
 
 namespace UKRWalks.UI.Controllers
@@ -12,6 +15,7 @@ namespace UKRWalks.UI.Controllers
             this.httpClientFactory = httpClientFactory;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
 
@@ -31,5 +35,36 @@ namespace UKRWalks.UI.Controllers
             }
             return View(response);
         }
+
+        [HttpGet] 
+        public IActionResult Add()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Add(AddRegionViewModel model)
+        {
+            var client = httpClientFactory.CreateClient();
+
+            var httpRequestMessage = new HttpRequestMessage()
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri("https://localhost:7139/api/regions"),
+                Content = new StringContent(JsonSerializer.Serialize(model), Encoding.UTF8, "application/json")
+            };
+
+            var httpResponseMessage = await client.SendAsync(httpRequestMessage);
+            httpResponseMessage.EnsureSuccessStatusCode();
+
+            var response = await httpResponseMessage.Content.ReadFromJsonAsync<IEnumerable<RegionDto>>();
+            if (response is not null)
+            {
+                return RedirectToAction("Index", "Regions");
+            }
+
+            return View();
+        }
+
     }
 }

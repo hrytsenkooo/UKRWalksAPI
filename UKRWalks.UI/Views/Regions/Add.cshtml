@@ -1,0 +1,42 @@
+﻿@model UKRWalks.UI.Models.AddRegionViewModel
+@{
+    ViewData["Title"] = "Add Region";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <h1 class="mb-4 text-primary text-center">Add New Region</h1>
+
+            <form method="post" class="p-4 border rounded bg-light shadow-sm">
+                <!-- Region Code -->
+                <div class="mb-3">
+                    <label for="Code" class="form-label fw-bold">Region Code</label>
+                    <input type="text" id="Code" class="form-control" asp-for="Code" placeholder="Enter region code" required />
+                    <span class="text-danger" asp-validation-for="Code"></span>
+                </div>
+
+                <!-- Region Name -->
+                <div class="mb-3">
+                    <label for="Name" class="form-label fw-bold">Region Name</label>
+                    <input type="text" id="Name" class="form-control" asp-for="Name" placeholder="Enter region name" required />
+                    <span class="text-danger" asp-validation-for="Name"></span>
+                </div>
+
+                <!-- Image URL -->
+                <div class="mb-3">
+                    <label for="RegionImageUrl" class="form-label fw-bold">Region Image URL</label>
+                    <input type="url" id="RegionImageUrl" class="form-control" asp-for="RegionImageUrl" placeholder="Enter image URL" />
+                    <span class="text-danger" asp-validation-for="RegionImageUrl"></span>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-save"></i> Save Region
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
