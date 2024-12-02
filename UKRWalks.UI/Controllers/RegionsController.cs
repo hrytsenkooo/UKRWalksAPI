@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -56,16 +57,20 @@ namespace UKRWalks.UI.Controllers
             };
 
             var httpResponseMessage = await client.SendAsync(httpRequestMessage);
-            httpResponseMessage.EnsureSuccessStatusCode();
 
-            var response = await httpResponseMessage.Content.ReadFromJsonAsync<IEnumerable<RegionDto>>();
-            if (response is not null)
+            if (httpResponseMessage.IsSuccessStatusCode)
             {
-                return RedirectToAction("Index", "Regions");
+                var createdRegion = await httpResponseMessage.Content.ReadFromJsonAsync<RegionDto>();
+                if (createdRegion != null)
+                {
+                    return RedirectToAction("Index", "Regions");
+                }
             }
 
-            return View();
+            ModelState.AddModelError(string.Empty, "An error occurred while creating the region.");
+            return View(model);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
@@ -105,6 +110,59 @@ namespace UKRWalks.UI.Controllers
             return View();
         }
 
+        [HttpPost] 
+        public async Task<IActionResult> Delete(RegionDto regionDto)
+        {
+            try
+            {
+                var client = httpClientFactory.CreateClient();
 
-    }
+                var httpResponseMessage = await client.DeleteAsync($"https://localhost:7139/api/regions/{regionDto.Id}");
+                httpResponseMessage.EnsureSuccessStatusCode();
+
+                return RedirectToAction("Index", "Regions");
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return View("Edit");
+            
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            try
+            {
+                var client = httpClientFactory.CreateClient();
+
+                var httpResponseMessage = await client.GetAsync($"https://localhost:7139/api/regions/{id}");
+
+                if (!httpResponseMessage.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+
+                var regionJson = await httpResponseMessage.Content.ReadAsStringAsync();
+
+                var region = System.Text.Json.JsonSerializer.Deserialize<RegionDto>(
+                    regionJson,
+                    new System.Text.Json.JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                return View(region);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return RedirectToAction("Index");
+            }
+        }
+
+
+     }
 }

@@ -6,7 +6,6 @@ namespace UKRWalks.API.Models.DTO
     {
         [Required]
         [MinLength(4, ErrorMessage = "Code has to be a minimum of 4 characters")]
-        [MaxLength(4, ErrorMessage = "Code has to be a maximum of 4 characters")]
         public string Code { get; set; }
 
         [Required]

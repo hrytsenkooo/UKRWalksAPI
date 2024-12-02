@@ -1,0 +1,37 @@
+﻿@model UKRWalks.UI.Models.DTO.RegionDto
+
+@{
+    ViewData["Title"] = "Region Details";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="text-primary">Region Details</h1>
+            <hr />
+
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h2>@Model.Name</h2>
+                </div>
+                <div class="card-body">
+                    <p><strong>ID:</strong> @Model.Id</p>
+                    <p><strong>Code:</strong> @Model.Code</p>
+                    <p><strong>Name:</strong> @Model.Name</p>
+
+                    @if (!string.IsNullOrEmpty(Model.RegionImageUrl))
+                    {
+                        <div class="mb-3">
+                            <img src="@Model.RegionImageUrl" alt="@Model.Name" class="img-fluid rounded shadow-sm" />
+                        </div>
+                    }
+                </div>
+                <div class="card-footer">
+                    <a href="@Url.Action("Index", "Regions")" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to List
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
