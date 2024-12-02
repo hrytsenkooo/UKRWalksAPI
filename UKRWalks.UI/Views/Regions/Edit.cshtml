@@ -1,14 +1,21 @@
-﻿@model UKRWalks.UI.Models.AddRegionViewModel
+﻿@model UKRWalks.UI.Models.DTO.RegionDto
+
 @{
-    ViewData["Title"] = "Add Region";
+    ViewData["Title"] = "Edit Region";
 }
 
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <h1 class="mb-4 text-primary text-center">Add New Region</h1>
+            <h1 class="mb-4 text-primary text-center">Edit Region</h1>
 
             <form method="post" class="p-4 border rounded bg-light shadow-sm">
+                <div class="mb-3">
+                    <label for="Id" class="form-label fw-bold">Region Id</label>
+                    <input type="text" id="Id" class="form-control" asp-for="Id" readonly />
+                    <span class="text-danger" asp-validation-for="Id"></span>
+                </div>
+
                 <div class="mb-3">
                     <label for="Code" class="form-label fw-bold">Region Code</label>
                     <input type="text" id="Code" class="form-control" asp-for="Code" placeholder="Enter region code" required />
